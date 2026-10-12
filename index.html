@@ -84,6 +84,24 @@
     width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
     color:var(--paper); display:flex; align-items:center; justify-content:center; cursor:pointer;
   }
+  #homeBtn{
+    position:absolute; top:calc(env(safe-area-inset-top,0px) + 16px); right:62px; z-index:6;
+    width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:var(--paper); display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  body.on-hub #homeBtn{ display:none; }
+  #homeConfirm{ position:absolute; inset:0; z-index:30; display:flex; align-items:flex-end; justify-content:center;
+    padding:0 18px calc(env(safe-area-inset-bottom,0px) + 28px); background:rgba(5,6,12,0.45);
+    opacity:0; pointer-events:none; transition:opacity .25s ease; }
+  #homeConfirm.show{ opacity:1; pointer-events:auto; }
+  #homeConfirm .hc-sheet{ width:100%; max-width:340px; padding:20px 18px 16px; border-radius:18px;
+    background:rgba(24,22,30,0.92); border:1px solid rgba(255,255,255,0.10); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    transform:translateY(10px); transition:transform .25s ease; text-align:center; }
+  #homeConfirm.show .hc-sheet{ transform:none; }
+  #homeConfirm .hc-q{ font-family:'Noto Sans KR',sans-serif; font-size:13px; color:var(--paper-dim); margin-bottom:14px; letter-spacing:.01em; }
+  #homeConfirm button{ display:block; width:100%; padding:12px 10px; border-radius:12px; font-family:'Noto Sans KR',sans-serif; font-size:14px; cursor:pointer; }
+  #homeConfirm .hc-stay{ background:rgba(201,168,106,0.16); border:1px solid rgba(201,168,106,0.5); color:var(--gold); margin-bottom:8px; }
+  #homeConfirm .hc-go{ background:transparent; border:1px solid rgba(255,255,255,0.12); color:var(--paper-dim); }
   #backBtn{
     position:absolute; left:0; top:0; bottom:0; z-index:6;
     width:min(20vw, 84px);
@@ -351,6 +369,9 @@
   <button id="backBtn" aria-label="이전 화면">
     <span class="back-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="17" height="17"><path d="M15 5l-7 7 7 7"/></svg></span>
   </button>
+  <button id="homeBtn" aria-label="처음 화면으로">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="17" height="17"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg>
+  </button>
   <button id="muteBtn" aria-label="소리 켜기/끄기">
     <svg id="muteIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="17" height="17">
       <path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/>
@@ -358,6 +379,13 @@
     </svg>
   </button>
 
+  <div id="homeConfirm" role="dialog" aria-modal="true">
+    <div class="hc-sheet">
+      <div class="hc-q">처음 화면으로 돌아갈까요?</div>
+      <button class="hc-stay" id="hcStay">기도 계속 이어가기</button>
+      <button class="hc-go" id="hcGo">맨 처음으로 돌아가기</button>
+    </div>
+  </div>
   <div id="stage"><div id="card"></div></div>
   <div id="nextHint"><svg viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="1.4"><path d="M6 9l6 6 6-6"/></svg></div>
   <div id="doorOverlay"><div class="door-panel door-left"></div><div class="door-panel door-right"></div></div>
@@ -957,7 +985,7 @@ function render(){
   if(s.type==='intro'){
     setTheme(1, CH[1].motif);
     chapterTitle.textContent=''; chapterSub.textContent=''; renderDots(null);
-    const title = s.heroTitle || '일상 속 성소 세우기<br>기도';
+    const title = s.heroTitle || '일상 속에 성소를 순례하는<br>예배 기도';
     card.innerHTML = `
       <div class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>일상 기도루틴</div>
       <div class="hero-title" style="margin-bottom:34px;">${title}</div>
@@ -1256,9 +1284,14 @@ function prev(){
 
 document.getElementById('stage').addEventListener('click', ()=>{ if(onHub) return; next(); });
 backBtn.addEventListener('click',(e)=>{ e.stopPropagation(); if(!onHub) prev(); });
+const homeConfirm=document.getElementById('homeConfirm');
+document.getElementById('homeBtn').addEventListener('click',(e)=>{ e.stopPropagation(); if(!onHub) homeConfirm.classList.add('show'); });
+document.getElementById('hcStay').addEventListener('click',(e)=>{ e.stopPropagation(); homeConfirm.classList.remove('show'); });
+document.getElementById('hcGo').addEventListener('click',(e)=>{ e.stopPropagation(); homeConfirm.classList.remove('show'); renderHub(); });
+homeConfirm.addEventListener('click',(e)=>{ e.stopPropagation(); if(e.target===homeConfirm) homeConfirm.classList.remove('show'); });
 document.getElementById('muteBtn').addEventListener('click',(e)=>{ e.stopPropagation(); toggleMute(); });
 document.addEventListener('keydown',(e)=>{
-  if(onHub) return;
+  if(onHub || homeConfirm.classList.contains('show')) return;
   if(e.key==='ArrowRight' || e.key===' ') next();
   if(e.key==='ArrowLeft') prev();
 });
@@ -1403,6 +1436,7 @@ let onHub=true;
 function renderHub(){
   clearSilenceTimer();
   onHub=true;
+  document.body.classList.add('on-hub');
   bgMotif.classList.remove('gate');
   bgMotif.innerHTML='';
   document.documentElement.style.setProperty('--motif-a', '#c9a86a');
@@ -1421,8 +1455,8 @@ function renderHub(){
     <div class="hint" style="margin-bottom:30px;">지금 주시는 마음에 따라 기도를 선택하세요.</div>
     <div class="deck-list">
       <div class="deck-card" data-deck="imjae">
-        <div class="deck-card-title">일상 속 성소 세우기<br>기도</div>
-        <div class="deck-card-desc">성막을 지나 하나님의 임재로<br>나아가는 여정</div>
+        <div class="deck-card-title">일상 속에 성소를 순례하는<br>예배 기도</div>
+        <div class="deck-card-desc">성소의 구조를 따라 순례하며<br>하나님의 임재를 경험하는 기도</div>
       </div>
       <div class="deck-card" data-deck="jeontu">
         <div class="deck-card-title">악과 어둠을 몰아내는<br>전투 기도</div>
@@ -1443,6 +1477,7 @@ function loadDeck(key){
   const d = DECKS[key];
   if(!d) return;
   onHub=false;
+  document.body.classList.remove('on-hub');
   S = d.S; CH = d.CH;
   majorLabel = d.majorLabel || '순례';
   document.body.classList.toggle('theme-jeontu', d.themeClass==='theme-jeontu');
