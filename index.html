@@ -480,10 +480,18 @@ const MOTIFS = {
     ${Array.from({length:6}).map((_,i)=>{const a=(i/6)*Math.PI*2+0.3; const x2=200+Math.cos(a)*95,y2=140+Math.sin(a)*95; return `<line x1="200" y1="140" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--motif-a)" stroke-width="2" opacity="0.22" filter="url(#soft)"/>`;}).join('')}</svg>`,
   covenant: `<svg viewBox="0 0 400 240"><defs><filter id="soft"><feGaussianBlur stdDeviation="7"/></filter></defs>
     ${[[150,120],[195,110],[240,120],[285,110]].map(([x,y],i)=>`<ellipse cx="${x}" cy="${y}" rx="26" ry="18" fill="none" stroke="var(--motif-a)" stroke-width="6" opacity="${0.32-i*0.03}" filter="url(#soft)" transform="rotate(${i*8} ${x} ${y})"/>`).join('')}</svg>`,
-  armor: `<svg viewBox="0 0 400 280"><defs><filter id="soft"><feGaussianBlur stdDeviation="8"/></filter>
-    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--motif-a)" stop-opacity="0.4"/><stop offset="100%" stop-color="var(--motif-b)" stop-opacity="0.15"/></linearGradient></defs>
-    <path d="M200 40 L270 70 V150 C270 200 235 235 200 250 C165 235 130 200 130 150 V70 Z" fill="url(#g1)" filter="url(#soft)"/>
-    <rect x="195" y="55" width="10" height="170" fill="var(--motif-b)" opacity="0.28" filter="url(#soft)"/></svg>`,
+  armor: `<svg viewBox="0 0 400 280"><defs><filter id="soft"><feGaussianBlur stdDeviation="3.2"/></filter>
+    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--motif-a)" stop-opacity="0.34"/><stop offset="100%" stop-color="var(--motif-b)" stop-opacity="0.22"/></linearGradient></defs>
+    <g filter="url(#soft)" stroke="var(--motif-a)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-opacity="0.5">
+      <path d="M200 40 L268 62 V140 C268 195 238 232 200 250 C162 232 132 195 132 140 V62 Z" fill="url(#g1)"/>
+      <path d="M200 62 V236 M146 118 H254" fill="none" stroke-opacity="0.38"/>
+      <path d="M44 74 Q70 56 96 74 L112 102 L100 120 V188 Q70 204 40 188 V120 L28 102 Z" fill="url(#g1)"/>
+      <path d="M52 74 Q70 94 88 74 M70 94 V196 M46 140 H94" fill="none" stroke-opacity="0.38"/>
+      <path d="M330 28 L339 60 V172 H321 V60 Z" fill="url(#g1)"/>
+      <rect x="298" y="172" width="64" height="10" rx="4" fill="url(#g1)"/>
+      <rect x="326" y="182" width="8" height="38" rx="3" fill="url(#g1)"/>
+      <circle cx="330" cy="228" r="7" fill="url(#g1)"/>
+    </g></svg>`,
   battlefront: `<svg viewBox="0 0 400 260"><defs><filter id="soft"><feGaussianBlur stdDeviation="12"/></filter>
     <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--motif-a)" stop-opacity="0.32"/><stop offset="100%" stop-color="var(--motif-b)" stop-opacity="0.5"/></linearGradient></defs>
     <path d="M0 200 L60 150 L120 190 L180 130 L230 185 L290 145 L340 195 L400 160 V260 H0 Z" fill="url(#g1)" filter="url(#soft)"/></svg>`,
@@ -595,14 +603,14 @@ const IMJAE_S = [
 
 /* ============ 챕터 정의 (전투 기도) ============ */
 const JEONTU_CH = {
-  1:{title:'주기도문', sub:'', motif:'kingdom', a:'#c23b3b', b:'#3a1414', major:1},
-  2:{title:'탄원하는 기도', sub:'', motif:'lament', a:'#8a2f2f', b:'#2a0f0f', major:2},
-  3:{title:'피로 맺은 언약 기도', sub:'', motif:'covenant', a:'#b03838', b:'#341010', major:3},
-  4:{title:'승리하신 예수님 앞에<br>나아가는 기도', sub:'', motif:'victory', a:'#e0483f', b:'#4a1414', major:4},
+  1:{title:'주기도문', sub:'', motif:'kingdom', a:'#b39a86', b:'#2e2428', major:1},
+  2:{title:'탄원하는 기도', sub:'', motif:'lament', a:'#a08580', b:'#2a2024', major:2},
+  3:{title:'피로 맺은 언약 기도', sub:'', motif:'covenant', a:'#a87c74', b:'#30211f', major:3},
+  4:{title:'승리하신 예수님 앞에<br>나아가는 기도', sub:'', motif:'victory', a:'#cfa273', b:'#3a2a20', major:4},
   5:{title:'전신갑주를 입는 기도', sub:'', motif:'armor', a:'#9c3232', b:'#2e0e0e', major:5},
   6:{title:'영적 전투의 현장', sub:'', motif:'battlefront', a:'#7a2b2b', b:'#241010', major:6},
   7:{title:'어둠을 털고<br>갑옷을 벗는 기도', sub:'', motif:'restpeace', a:'#b5504a', b:'#3a1818', major:7},
-  8:{title:'주기도문', sub:'', motif:'kingdom', a:'#c23b3b', b:'#3a1414', major:8}
+  8:{title:'주기도문', sub:'', motif:'kingdom', a:'#b39a86', b:'#2e2428', major:8}
 };
 
 /* ============ 화면 스크립트 (전투 기도) ============ */
@@ -960,6 +968,7 @@ function setTheme(ch, motifOverride){
   document.documentElement.style.setProperty('--motif-a', c.a);
   document.documentElement.style.setProperty('--motif-b', c.b);
   document.documentElement.style.setProperty('--gold', c.a);
+  if(activeDeckKey==='jeontu') fxCalm = !(ch>=5 && ch<=6);
   bgMotif.innerHTML = MOTIFS[motifOverride || c.motif] || '';
 }
 function renderDots(ch){
@@ -1114,7 +1123,7 @@ function render(){
       </div>
     `).join('');
     card.innerHTML = `
-      ${s.title ? `<div class="subline">${s.title}</div>` : ''}
+      ${s.title && !s.branch ? `<div class="subline">${s.title}</div>` : ''}
       <div class="tag">${s.tagText || '아래 가이드를 참고하여<br>나의 언어로 고백하기'}</div>
       <div class="guide-scroll">${stepsHtml}</div>
     `;
@@ -1299,7 +1308,7 @@ document.addEventListener('keydown',(e)=>{
 /* ============ 전투 기도용 잔불(ember) 캔버스 애니메이션 ============ */
 const fxCanvas = document.getElementById('warfareFX');
 const fxCtx = fxCanvas ? fxCanvas.getContext('2d') : null;
-let fxParticles=[], fxRunning=false, fxRAF=null;
+let fxParticles=[], fxRunning=false, fxRAF=null, fxCalm=true;
 const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function resizeFX(){ if(!fxCanvas) return; fxCanvas.width=window.innerWidth; fxCanvas.height=window.innerHeight; }
 window.addEventListener('resize', resizeFX);
@@ -1318,13 +1327,14 @@ function spawnParticle(initial){
 function fxLoop(){
   if(!fxRunning || !fxCtx) return;
   fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
-  fxParticles.forEach(p=>{
-    p.y -= p.speed;
+  fxParticles.forEach((p,pi)=>{
+    p.y -= p.speed*(fxCalm?0.55:1);
     p.x += p.drift;
     p.flicker += 0.05;
-    const a = p.alpha * (0.55+0.45*Math.sin(p.flicker));
+    if(fxCalm && pi>=8){ if(p.y < -10) Object.assign(p, spawnParticle(false)); return; }
+    const a = p.alpha * (0.55+0.45*Math.sin(p.flicker)) * (fxCalm?0.5:1);
     fxCtx.beginPath();
-    fxCtx.fillStyle = `rgba(224,90,70,${a.toFixed(3)})`;
+    fxCtx.fillStyle = fxCalm ? `rgba(226,176,128,${a.toFixed(3)})` : `rgba(224,90,70,${a.toFixed(3)})`;
     fxCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
     fxCtx.fill();
     if(p.y < -10) Object.assign(p, spawnParticle(false));
