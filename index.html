@@ -90,6 +90,8 @@
     color:var(--paper); display:flex; align-items:center; justify-content:center; cursor:pointer;
   }
   body.on-hub #homeBtn{ display:none; }
+  .hub-footer{ margin:30px auto 0; max-width:320px; font-family:'Noto Sans KR',sans-serif; font-size:11px; line-height:1.75; color:var(--paper-dim); opacity:.62; text-align:center; letter-spacing:.01em; }
+  .hub-footer b{ font-weight:500; color:var(--paper); opacity:.9; }
   #homeConfirm{ position:absolute; inset:0; z-index:30; display:flex; align-items:flex-end; justify-content:center;
     padding:0 18px calc(env(safe-area-inset-bottom,0px) + 28px); background:rgba(5,6,12,0.45);
     opacity:0; pointer-events:none; transition:opacity .25s ease; }
@@ -1443,6 +1445,30 @@ function clearEmo(){
 
 /* ============ 허브(기도 선택) 화면 ============ */
 let onHub=true;
+/* ============ 방문 집계 (GoatCounter) — 배포 주소(github.io)에서만 동작 ============ */
+const GC_SITE='daily-prayer';
+let visitCountCache=null;
+(function(){
+  try{
+    if(!/\.github\.io$/.test(location.hostname)) return;
+    const sc=document.createElement('script');
+    sc.async=true; sc.src='//gc.zgo.at/count.js';
+    sc.setAttribute('data-goatcounter','https://'+GC_SITE+'.goatcounter.com/count');
+    document.head.appendChild(sc);
+  }catch(e){}
+})();
+function showVisitCount(){
+  const el=document.getElementById('visitCount'); if(!el) return;
+  const paint=(t)=>{ el.textContent='방문 '+t+'회'; el.style.display='block'; };
+  if(visitCountCache){ paint(visitCountCache); return; }
+  if(!/\.github\.io$/.test(location.hostname)) return;
+  setTimeout(()=>{
+    fetch('https://'+GC_SITE+'.goatcounter.com/counter/TOTAL.json')
+      .then(r=>r.ok?r.json():null)
+      .then(j=>{ if(j && j.count){ visitCountCache=j.count; const e2=document.getElementById('visitCount'); if(e2){ e2.textContent='방문 '+j.count+'회'; e2.style.display='block'; } } })
+      .catch(()=>{});
+  },1200);
+}
 function renderHub(){
   clearSilenceTimer();
   onHub=true;
@@ -1477,10 +1503,12 @@ function renderHub(){
         <div class="deck-card-desc">내 안의 감정과 갈망을<br>있는 그대로 주님께 털어놓는 기도</div>
       </div>
     </div>
+    <div class="hub-footer">개인적인 사용과 공유는 자유롭게 가능합니다.<br>다만, 단체 차원에서 사용을 원하시는 경우<br>아래 연락처로 문의 바랍니다.<br><b>010-4307-7531 / nudibranch@ivf.or.kr</b><div id="visitCount" style="display:none;margin-top:8px;"></div></div>
   `;
   document.querySelectorAll('.deck-card[data-deck]').forEach(elCard=>{
     elCard.addEventListener('click',(e)=>{ e.stopPropagation(); loadDeck(elCard.dataset.deck); });
   });
+  showVisitCount();
   animateCardEnter('fade');
 }
 function loadDeck(key){
